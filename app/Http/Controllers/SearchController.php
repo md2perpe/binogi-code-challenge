@@ -31,8 +31,21 @@ class SearchController extends Controller
                 'Authorization' => "Bearer {$access_token}",
             ],
         ]);
-
         return view('artist', json_decode($res->getBody(), true));
+    }
+
+
+    public function album(Request $request, $album_id)
+    {
+        $access_token = $this->getAccessToken();
+
+        $client = new Client();
+        $res = $client->request('GET', "https://api.spotify.com/v1/albums/{$album_id}", [
+            'headers' => [
+                'Authorization' => "Bearer {$access_token}",
+            ],
+        ]);
+        return view('album', json_decode($res->getBody(), true));
     }
 
 
