@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use GuzzleHttp\Client;
 
 class SearchController extends Controller
 {
@@ -16,6 +17,45 @@ class SearchController extends Controller
     {
         $query = $request->get('query');
 
-        return view('search', ['searchTerm' => $query]);
+        return view('search', $this->doSearch($query) + [ 'searchTerm' => $query ]);
+    }
+
+
+    private function getAccessToken()
+    {
+        $client = new Client();
+
+        $res = $client->request('POST', 'https://accounts.spotify.com/api/token', [
+            'auth' => [ 'xxx', 'xxx' ],
+            'form_params' => [
+                'grant_type' => 'client_credentials',
+            ],
+        ]);
+
+        return json_decode($res->getBody())->access_token;
+    }
+
+    private function doSearch($query)
+    {
+        $access_token = $this->getAccessToken();
+
+        $client = new Client();
+        $res = $client->request('GET', 'https://api.spotify.com/v1/search', [
+            'headers' => [
+                'Authorization' => "Bearer {$access_token}",
+            ],
+            'query' => [
+                'q' => $query,
+                'type' => 'artist,album,track',
+            ]
+        ]);
+
+        $data = json_decode($res->getBody());
+
+        return [
+            'artists' => $data->artists->items,
+            'albums'  => $data->albums->items,
+            'tracks'  => $data->tracks->items,
+        ];
     }
 }
