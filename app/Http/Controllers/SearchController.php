@@ -49,6 +49,20 @@ class SearchController extends Controller
     }
 
 
+    public function track(Request $request, $track_id)
+    {
+        $access_token = $this->getAccessToken();
+
+        $client = new Client();
+        $res = $client->request('GET', "https://api.spotify.com/v1/tracks/{$track_id}", [
+            'headers' => [
+                'Authorization' => "Bearer {$access_token}",
+            ],
+        ]);
+        return view('track', json_decode($res->getBody(), true));
+    }
+
+
     private function getAccessToken()
     {
         $client = new Client();

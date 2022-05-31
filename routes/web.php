@@ -16,3 +16,4 @@ Route::post('/search', "SearchController@search");
 
 Route::get('/artist/{id}', "SearchController@artist");
 Route::get('/album/{id}',  "SearchController@album");
+Route::get('/track/{id}',  "SearchController@track");
