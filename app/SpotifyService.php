@@ -55,38 +55,25 @@ class SpotifyService
 
     public function artist($artist_id)
     {
-        $access_token = $this->getAccessToken();
-
-        $client = new Client();
-        $res = $client->request('GET', "https://api.spotify.com/v1/artists/{$artist_id}", [
-            'headers' => [
-                'Authorization' => "Bearer {$access_token}",
-            ],
-        ]);
-
-        return json_decode($res->getBody(), true);
+        return $this->getEntity('artist', $artist_id);
     }
 
     public function album($album_id)
     {
-        $access_token = $this->getAccessToken();
-
-        $client = new Client();
-        $res = $client->request('GET', "https://api.spotify.com/v1/albums/{$album_id}", [
-            'headers' => [
-                'Authorization' => "Bearer {$access_token}",
-            ],
-        ]);
-
-        return json_decode($res->getBody(), true);
+        return $this->getEntity('album', $album_id);
     }
 
     public function track($track_id)
     {
+        return $this->getEntity('track', $track_id);
+    }
+
+    private function getEntity($type, $id)
+    {
         $access_token = $this->getAccessToken();
 
         $client = new Client();
-        $res = $client->request('GET', "https://api.spotify.com/v1/tracks/{$track_id}", [
+        $res = $client->request('GET', "https://api.spotify.com/v1/{$type}s/{$id}", [
             'headers' => [
                 'Authorization' => "Bearer {$access_token}",
             ],
