@@ -41,8 +41,6 @@ $app->singleton(
     App\Exceptions\Handler::class
 );
 
-$app->singleton(new App\SpotifyService());
-
 /*
 |--------------------------------------------------------------------------
 | Return The Application
