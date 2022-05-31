@@ -6,15 +6,21 @@ use GuzzleHttp\Client;
 
 class SpotifyService
 {
-    static $CLIENT_ID = 'xxx';
-    static $CLIENT_SECRET = 'xxx';
+    private $client_id;
+    private $client_secret;
+
+    public function __construct()
+    {
+        $this->client_id = env('SPOTIFY_CLIENT_ID');
+        $this->client_secret = env('SPOTIFY_CLIENT_SECRET');
+    }
 
     private function getAccessToken()
     {
         $client = new Client();
 
         $res = $client->request('POST', 'https://accounts.spotify.com/api/token', [
-            'auth' => [ SpotifyService::$CLIENT_ID, SpotifyService::$CLIENT_SECRET ],
+            'auth' => [ $this->client_id, $this->client_secret ],
             'form_params' => [
                 'grant_type' => 'client_credentials',
             ],
