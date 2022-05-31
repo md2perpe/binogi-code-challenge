@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use GuzzleHttp\Client;
+use App\SpotifyService;
 
 class SearchController extends Controller
 {
@@ -13,91 +13,25 @@ class SearchController extends Controller
     }
 
 
-    public function search(Request $request)
+    public function search(Request $request, SpotifyService $spotify)
     {
         $query = $request->get('query');
-
-        return view('search', $this->doSearch($query) + [ 'searchTerm' => $query ]);
+        return view('search', $spotify->search($query) + [ 'searchTerm' => $query ]);
     }
 
 
-    public function artist(Request $request, $artist_id)
+    public function artist($artist_id, SpotifyService $spotify)
     {
-        $access_token = $this->getAccessToken();
-
-        $client = new Client();
-        $res = $client->request('GET', "https://api.spotify.com/v1/artists/{$artist_id}", [
-            'headers' => [
-                'Authorization' => "Bearer {$access_token}",
-            ],
-        ]);
-        return view('artist', json_decode($res->getBody(), true));
+        return view('artist', $spotify->artist($artist_id));
     }
 
-
-    public function album(Request $request, $album_id)
+    public function album($album_id, SpotifyService $spotify)
     {
-        $access_token = $this->getAccessToken();
-
-        $client = new Client();
-        $res = $client->request('GET', "https://api.spotify.com/v1/albums/{$album_id}", [
-            'headers' => [
-                'Authorization' => "Bearer {$access_token}",
-            ],
-        ]);
-        return view('album', json_decode($res->getBody(), true));
+        return view('album', $spotify->album($album_id));
     }
 
-
-    public function track(Request $request, $track_id)
+    public function track($track_id, SpotifyService $spotify)
     {
-        $access_token = $this->getAccessToken();
-
-        $client = new Client();
-        $res = $client->request('GET', "https://api.spotify.com/v1/tracks/{$track_id}", [
-            'headers' => [
-                'Authorization' => "Bearer {$access_token}",
-            ],
-        ]);
-        return view('track', json_decode($res->getBody(), true));
-    }
-
-
-    private function getAccessToken()
-    {
-        $client = new Client();
-
-        $res = $client->request('POST', 'https://accounts.spotify.com/api/token', [
-            'auth' => [ 'xxx', 'xxx' ],
-            'form_params' => [
-                'grant_type' => 'client_credentials',
-            ],
-        ]);
-
-        return json_decode($res->getBody())->access_token;
-    }
-
-    private function doSearch($query)
-    {
-        $access_token = $this->getAccessToken();
-
-        $client = new Client();
-        $res = $client->request('GET', 'https://api.spotify.com/v1/search', [
-            'headers' => [
-                'Authorization' => "Bearer {$access_token}",
-            ],
-            'query' => [
-                'q' => $query,
-                'type' => 'artist,album,track',
-            ]
-        ]);
-
-        $data = json_decode($res->getBody());
-
-        return [
-            'artists' => $data->artists->items,
-            'albums'  => $data->albums->items,
-            'tracks'  => $data->tracks->items,
-        ];
+        return view('track', $spotify->track($track_id));
     }
 }
