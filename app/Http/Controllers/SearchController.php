@@ -21,6 +21,21 @@ class SearchController extends Controller
     }
 
 
+    public function artist(Request $request, $artist_id)
+    {
+        $access_token = $this->getAccessToken();
+
+        $client = new Client();
+        $res = $client->request('GET', "https://api.spotify.com/v1/artists/{$artist_id}", [
+            'headers' => [
+                'Authorization' => "Bearer {$access_token}",
+            ],
+        ]);
+
+        return view('artist', json_decode($res->getBody(), true));
+    }
+
+
     private function getAccessToken()
     {
         $client = new Client();
