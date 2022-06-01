@@ -16,6 +16,10 @@ class SearchController extends Controller
     public function search(Request $request, SpotifyService $spotify)
     {
         $query = $request->get('query');
+        if (empty($query)) {
+            return redirect('/');
+        }
+
         return view('search', $spotify->search($query) + [ 'searchTerm' => $query ]);
     }
 
